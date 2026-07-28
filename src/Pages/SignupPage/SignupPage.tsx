@@ -8,7 +8,7 @@ export function Signup () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const navigate = useNavigate()
+  const navigate = useNavigate() 
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
