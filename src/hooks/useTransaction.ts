@@ -10,7 +10,7 @@ export function Usetransition() {
             queryKey : ['transactions', user?.id],
             queryFn : async ()=>{
                 const {data , error}= await supabase
-                .from('transaction')
+                .from('transactions')
                 .select('*')
                 .eq('user_id', user!.id)
                 
