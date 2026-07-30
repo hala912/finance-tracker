@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "../context/AuthContext"
 import { supabase } from "../Api/supabase"
 
-export function Usetransition() {
+export function useTransaction() {
 
     const { user } = useAuth() 
     return useQuery(
