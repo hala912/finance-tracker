@@ -13,10 +13,10 @@ const TransactionsRow = ()=>{
       Shopping: "bg-violet-50 text-violet-700",
       Groceries: "bg-rose-50 text-rose-700",
     };
-      const { data } = useTransaction();
+      const { data , page , setPage } = useTransaction();
     
-      const transactions = data ?? [];
-
+  
+      const transactions = data?.data ?? [];
       const {mutate:handleremove} = useRemoveTransaction()
       
        
@@ -97,14 +97,22 @@ const TransactionsRow = ()=>{
 
           <div className="flex items-center justify-between border-t border-stone-100 px-5 py-3 text-xs text-stone-400">
             <span>
-              Showing {transactions.length} of {transactions.length}{" "}
+              Showing {transactions.length} of {data?.count}{" "}
               transactions
             </span>
             <div className="flex gap-2">
-              <button className="rounded-md border border-stone-200 px-3 py-1 hover:bg-stone-50">
+              <button className="rounded-md border border-stone-200 px-3 py-1 hover:bg-stone-50"
+              onClick={()=>{
+                setPage(page-1)
+              }}
+              >
                 Previous
               </button>
-              <button className="rounded-md border border-stone-200 px-3 py-1 hover:bg-stone-50">
+              <button className="rounded-md border border-stone-200 px-3 py-1 hover:bg-stone-50"
+              onClick={()=>{
+                setPage(page+1)
+              }}
+              >
                 Next
               </button>
             </div>
