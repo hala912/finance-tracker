@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRemoveTransaction } from "../../hooks/useRemovetransaction";
 import { useTransaction } from "../../hooks/useTransaction";
 
@@ -12,19 +12,31 @@ const TransactionsRow = () => {
   };
   const { data, page, setPage } = useTransaction();
 
-  const [searchTerm, setSearchTerm] = useState("")
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const transactions = data?.data ?? [];
   const { mutate: handleremove } = useRemoveTransaction();
 
-  useEffect(()=>{
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
-    const timer = setTimeout(()=>{
-      setDebouncedSearchTerm(searchTerm)
-    },500)
-    return ()=>clearTimeout(timer)
-  },[searchTerm,debouncedSearchTerm])
-
+  const filteredTransactions = useMemo(() => {
+    const q = debouncedSearchTerm.trim().toLowerCase();
+    if (!q) return transactions;
+    return transactions.filter((t) => {
+      return (
+        t.description.toLowerCase().includes(q) ||
+        t.category.toLowerCase().includes(q) ||
+        t.type.toLowerCase().includes(q) ||
+        t.occurred_on.toLowerCase().includes(q) ||
+        String(t.amount).includes(q)
+      );
+    });
+  }, [transactions, debouncedSearchTerm]);
 
   return (
     <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
@@ -33,7 +45,7 @@ const TransactionsRow = () => {
           Recent Activity
         </h2>
         <div className="flex flex-col gap-1">
-            <input
+          <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -54,14 +66,14 @@ const TransactionsRow = () => {
           </tr>
         </thead>
         <tbody>
-          {transactions.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             <tr>
               <td colSpan={5} className="px-5 py-10 text-center text-stone-400">
                 No transactions yet.
               </td>
             </tr>
           ) : (
-            transactions.map((t) => (
+            filteredTransactions.map((t) => (
               <tr
                 key={t.id}
                 className="border-b border-stone-50 last:border-0 hover:bg-stone-50"
@@ -105,7 +117,7 @@ const TransactionsRow = () => {
 
       <div className="flex items-center justify-between border-t border-stone-100 px-5 py-3 text-xs text-stone-400">
         <span>
-          Showing {transactions.length} of {data?.count} transactions
+          Showing {filteredTransactions.length} of {data?.count} transactions
         </span>
         <div className="flex gap-2">
           <button
