@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRemoveTransaction } from "../../hooks/useRemovetransaction";
-import { useTransaction } from "../../hooks/useTransaction";
+import type { Transaction } from "../../types/Transaction";
 
-const TransactionsRow = () => {
+const TransactionsRow = ({ data, page, setPage }: { data: {data: Transaction[],count: number} | undefined; page: number; setPage: (page: number) => void }) => {
   const categoryStyles: Record<string, string> = {
     Income: "bg-emerald-50 text-emerald-700",
     Freelance: "bg-sky-50 text-sky-700",
@@ -10,13 +10,13 @@ const TransactionsRow = () => {
     Shopping: "bg-violet-50 text-violet-700",
     Groceries: "bg-rose-50 text-rose-700",
   };
-  const { data, page, setPage } = useTransaction();
-
+ 
+  
   const [searchTerm, setSearchTerm] = useState("")
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm)
-  const transactions = data?.data ?? [];
-  const { mutate: handleremove } = useRemoveTransaction();
-
+  const { mutate: handleremove } = useRemoveTransaction(page);
+   const transaction = data?.data ?? []
+   const count = data?.count ?? 0
   useEffect(()=>{
 
     const timer = setTimeout(()=>{
@@ -54,14 +54,14 @@ const TransactionsRow = () => {
           </tr>
         </thead>
         <tbody>
-          {transactions.length === 0 ? (
+          {transaction.length === 0 ? (
             <tr>
               <td colSpan={5} className="px-5 py-10 text-center text-stone-400">
                 No transactions yet.
               </td>
             </tr>
           ) : (
-            transactions.map((t) => (
+            transaction.map((t) => (
               <tr
                 key={t.id}
                 className="border-b border-stone-50 last:border-0 hover:bg-stone-50"
@@ -105,7 +105,8 @@ const TransactionsRow = () => {
 
       <div className="flex items-center justify-between border-t border-stone-100 px-5 py-3 text-xs text-stone-400">
         <span>
-          Showing {transactions.length} of {data?.count} transactions
+          Showing {
+          transaction.length} of {count} transactions
         </span>
         <div className="flex gap-2">
           <button

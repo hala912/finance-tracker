@@ -9,7 +9,8 @@ export function useTransaction() {
     const [page,setPage] = useState(0)
      const from = page * pageSize
      const to = from + (pageSize-1)
-    const { user } = useAuth() 
+    const { user } = useAuth()
+
 
     const query =  useQuery(
         {
@@ -23,7 +24,7 @@ export function useTransaction() {
                 
                 
                 if(error) throw error
-                return {data,count}
+                return {data,count:count??0}
             },
             enabled: !!user
         }

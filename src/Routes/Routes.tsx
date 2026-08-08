@@ -12,8 +12,10 @@ export function AppRoutes() {
       <Route path="/signup" element={<Signup />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/transaction" element={<TransactionPage />} />
+       
       </Route>
+      
+       <Route path="/transaction" element={<TransactionPage />} />
     </Routes>
   );
 }
