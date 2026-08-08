@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useAddTransaction } from "../../hooks/useAddTransaction";
 
-const TransactionForm = () => {
+const TransactionForm = ({ page }: { page: number }) => {
   
   const [amount, setAmount] = useState("")
   const [category, setCategory] = useState("")
   const [description, setDescription] = useState("");
   const [type ,setType] = useState<'income' | 'expense'>('expense');
 
+  
   const today = new Date().toISOString().split('T')[0]
-  const { mutate } = useAddTransaction();
+ 
+  const { mutate } = useAddTransaction(page);
 
   const handleSubmit = () => {
     mutate({

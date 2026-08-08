@@ -1,11 +1,13 @@
 import TransactionForm from "../../components/transaction/transactionForm";
 import TransactionsRow from "../../components/transaction/transactionRow";
+import { useTransaction } from "../../hooks/useTransaction";
 
 
 
 export default function TransactionsPage() {
 
 
+  const { data, page, setPage } = useTransaction();
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Top bar */}
@@ -41,10 +43,10 @@ export default function TransactionsPage() {
         </div>
 
         {/* Filter row */}
-        <TransactionForm/>
+        <TransactionForm page = {page}/>
 
         {/* Table */}
-        <TransactionsRow/>
+        <TransactionsRow data = {data} page = {page} setPage = {setPage}/>
         
       </main>
     </div>
