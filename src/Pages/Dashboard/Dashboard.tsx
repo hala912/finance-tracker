@@ -13,6 +13,7 @@ import { SummaryCards } from "../../components/dashboard/SummaryCards"
 import { RecentExpenses } from "../../components/dashboard/RecentExpenses"
 import { SpendByCategory } from "../../components/dashboard/SpendbyCatagory"
 import { Navbar } from "../../components/navbar/navbar"
+import { MonthlyTrend } from "./MonthlyTrendfunction"
 
 
 
@@ -29,7 +30,7 @@ const Dashboard = () => {
   if (error) return <div className="p-10 text-amber-700">Couldn't load your data.</div>
 
   const { totalIncome, totalExpense, balance, byCategory } = aggregateTransactions(data ?? [])
-  const monthlyTrend: { month: string; total: number }[] = []
+  const monthlyTrend = MonthlyTrend(data ?? []).monthlyTrend
 
   const recentExpenses = (data ?? [])
     .filter((t) => t.type === "expense")
