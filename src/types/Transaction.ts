@@ -1,3 +1,5 @@
+export type CategoryTotal = { category: string; total: number }
+
 
 export type Transaction = {
   id: string;
