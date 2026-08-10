@@ -1,10 +1,15 @@
+import { TransactionsSkeleton } from "../../components/common/loading";
 import { Navbar } from "../../components/navbar/navbar";
 import TransactionForm from "../../components/transaction/transactionForm";
 import TransactionsRow from "../../components/transaction/transactionRow";
 import { useTransaction } from "../../hooks/useTransaction";
 
 export default function TransactionsPage() {
-  const { data, page, setPage } = useTransaction();
+   const { data, page, setPage, isPending, isError, error } = useTransaction();
+
+  if (isPending) return <TransactionsSkeleton/>
+  if (isError) return <p>Something went wrong: {error.message}</p>;
+
  return (
   <div className="min-h-screen bg-[#FBF3EF]">
     <Navbar />

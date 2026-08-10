@@ -2,6 +2,8 @@
 
 A full-stack personal finance tracker built as a learning project to move beyond client-side-only apps into real backend, auth, and async data patterns.
 
+**Live demo:** [finance-tracker-tawny-zeta.vercel.app](https://finance-tracker-tawny-zeta.vercel.app)
+
 ## Why this project
 
 My previous project (a Movie app) used React + Redux Toolkit + Axios against a read-only third-party API — great for learning frontend state, but it never touched a real backend. This project was chosen specifically to close those gaps: a real database, real authentication, server state management, and non-trivial async patterns like pagination, debounced search, and optimistic updates.
@@ -24,7 +26,9 @@ My previous project (a Movie app) used React + Redux Toolkit + Axios against a r
 - Server-side pagination
 - Debounced, server-side search across description and category
 - Optimistic UI updates for add/delete, with automatic rollback on failure
-- Dashboard with income/expense totals, balance, and category breakdown *(in progress)*
+- Dashboard with income/expense totals, balance, category breakdown, and monthly spending trend
+- Loading and error states across all queries and mutations
+- Deployed on Vercel
 
 ## Project status
 
@@ -36,8 +40,8 @@ Actively in development, following a phased roadmap:
 | 2–3 | Auth context, protected routes, basic CRUD with TanStack Query | ✅ Done |
 | 4 | Server-side pagination, debounced search | ✅ Done |
 | 5 | Optimistic updates (add/delete) | ✅ Done |
-| 6 | Dashboard + Recharts visualizations | 🚧 In progress |
-| 7 | Loading/error states, empty states, deployment | ⏳ Planned |
+| 6 | Dashboard + Recharts visualizations | ✅ Done |
+| 7 | Loading/error states, empty states, deployment | ✅ Done |
 
 ## Getting started
 
@@ -96,6 +100,10 @@ Actively in development, following a phased roadmap:
    ```bash
    npm run dev
    ```
+
+## Deployment
+
+The app is deployed on [Vercel](https://vercel.com), connected directly to this repo's `main` branch. Environment variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) are configured in the Vercel project settings, and Supabase's Auth redirect URLs are updated to include the production domain.
 
 ## Project structure
 
