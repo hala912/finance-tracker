@@ -1,8 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRemoveTransaction } from "../../hooks/useRemovetransaction";
 import type { Transaction } from "../../types/Transaction";
+import { useTransactionAll } from "../../hooks/useTransactionAll";
 
-const TransactionsRow = ({ data, page, setPage }: { data: {data: Transaction[],count: number} | undefined; page: number; setPage: (page: number) => void }) => {
+const EMPTY_TRANSACTION: Transaction[] = [];
+
+const TransactionsRow = ({
+  data,
+  page,
+  setPage,
+}: {
+  data: { data: Transaction[]; count: number } | undefined;
+  page: number;
+  setPage: (page: number) => void;
+}) => {
   const categoryStyles: Record<string, string> = {
     Income: "bg-emerald-50 text-emerald-700",
     Freelance: "bg-sky-50 text-sky-700",
@@ -10,21 +21,32 @@ const TransactionsRow = ({ data, page, setPage }: { data: {data: Transaction[],c
     Shopping: "bg-violet-50 text-violet-700",
     Groceries: "bg-rose-50 text-rose-700",
   };
- 
-  
-  const [searchTerm, setSearchTerm] = useState("")
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm)
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const { mutate: handleremove } = useRemoveTransaction(page);
-   const transaction = data?.data ?? []
-   const count = data?.count ?? 0
-  useEffect(()=>{ 
+  const transaction = data?.data ?? EMPTY_TRANSACTION;
+  const count = data?.count ?? 0;
+  const { data: allTransactions } = useTransactionAll();
+  const allTransactionsList = allTransactions ?? EMPTY_TRANSACTION;
 
-    const timer = setTimeout(()=>{
-      setDebouncedSearchTerm(searchTerm)
-    },500)
-    return ()=>clearTimeout(timer)
-  },[searchTerm,debouncedSearchTerm])
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
+  const filteredTransactions = useMemo(() => {
+    const q = debouncedSearchTerm.trim().toLowerCase();
+    if (!q) return transaction;
+    return allTransactionsList.filter((t) => {
+      return (
+        t.description.toLowerCase().includes(q) ||
+        t.category.toLowerCase().includes(q)
+      );
+    });
+  }, [allTransactionsList, debouncedSearchTerm, transaction]);
 
   return (
     <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
@@ -33,7 +55,7 @@ const TransactionsRow = ({ data, page, setPage }: { data: {data: Transaction[],c
           Recent Activity
         </h2>
         <div className="flex flex-col gap-1">
-            <input
+          <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -54,14 +76,16 @@ const TransactionsRow = ({ data, page, setPage }: { data: {data: Transaction[],c
           </tr>
         </thead>
         <tbody>
-          {transaction.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             <tr>
               <td colSpan={5} className="px-5 py-10 text-center text-stone-400">
-                No transactions yet.
+                {debouncedSearchTerm
+                  ? "No transactions match your search."
+                  : "No transactions found."}
               </td>
             </tr>
           ) : (
-            transaction.map((t) => (
+            filteredTransactions.map((t) => (
               <tr
                 key={t.id}
                 className="border-b border-stone-50 last:border-0 hover:bg-stone-50"
@@ -105,8 +129,7 @@ const TransactionsRow = ({ data, page, setPage }: { data: {data: Transaction[],c
 
       <div className="flex items-center justify-between border-t border-stone-100 px-5 py-3 text-xs text-stone-400">
         <span>
-          Showing {
-          transaction.length} of {count} transactions
+          Showing {filteredTransactions.length} of {count} transactions
         </span>
         <div className="flex gap-2">
           <button
