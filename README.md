@@ -22,26 +22,30 @@ My previous project (a Movie app) used React + Redux Toolkit + Axios against a r
 - Email/password authentication with persistent sessions (Supabase Auth)
 - Protected routes — unauthenticated users are redirected to `/login`
 - Row Level Security — every user can only read/write their own transactions
-- Create, read, update, and delete transactions
+- Add, view, and delete transactions
 - Server-side pagination
 - Debounced, server-side search across description and category
 - Optimistic UI updates for add/delete, with automatic rollback on failure
 - Dashboard with income/expense totals, balance, category breakdown, and monthly spending trend
-- Loading and error states across all queries and mutations
+- Loading, error, and empty states across all queries and mutations
 - Deployed on Vercel
 
 ## Project status
 
-Actively in development, following a phased roadmap:
+All planned phases are complete and the app is deployed.
 
-| Phase | Description | Status |
-|---|---|---|
-| 0–1 | Project scaffold, Supabase schema, RLS policies | ✅ Done |
-| 2–3 | Auth context, protected routes, basic CRUD with TanStack Query | ✅ Done |
-| 4 | Server-side pagination, debounced search | ✅ Done |
-| 5 | Optimistic updates (add/delete) | ✅ Done |
-| 6 | Dashboard + Recharts visualizations | ✅ Done |
-| 7 | Loading/error states, empty states, deployment | ✅ Done |
+| Phase | Description                                                    | Status |
+| ----- | -------------------------------------------------------------- | ------ |
+| 0–1   | Project scaffold, Supabase schema, RLS policies                | ✅ Done |
+| 2–3   | Auth context, protected routes, basic CRUD with TanStack Query | ✅ Done |
+| 4     | Server-side pagination, debounced search                       | ✅ Done |
+| 5     | Optimistic updates (add/delete)                                | ✅ Done |
+| 6     | Dashboard + Recharts visualizations                            | ✅ Done |
+| 7     | Loading/error states, empty states, deployment                 | ✅ Done |
+
+### Known limitations
+
+- Transactions can be added and deleted, but not edited yet.
 
 ## Getting started
 
@@ -53,12 +57,14 @@ Actively in development, following a phased roadmap:
 ### Setup
 
 1. Clone the repo
+
    ```bash
    git clone https://github.com/hala912/finance-tracker.git
    cd finance-tracker
    ```
 
 2. Install dependencies
+
    ```bash
    npm install
    ```
@@ -66,6 +72,7 @@ Actively in development, following a phased roadmap:
 3. Set up environment variables
 
    Create a `.env` file in the project root:
+
    ```
    VITE_SUPABASE_URL=your-supabase-project-url
    VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
@@ -73,7 +80,7 @@ Actively in development, following a phased roadmap:
 
 4. Set up the database
 
-   In your Supabase project's SQL editor, create a `transactions` table:
+   In your Supabase project's SQL editor, run:
 
    ```sql
    create table transactions (
@@ -97,6 +104,7 @@ Actively in development, following a phased roadmap:
    ```
 
 5. Run the dev server
+
    ```bash
    npm run dev
    ```
@@ -111,11 +119,11 @@ The app is deployed on [Vercel](https://vercel.com), connected directly to this 
 src/
 ├── components/
 │   └── transactions/     # TransactionForm, TransactionsRow, etc.
-├── hooks/                 # useAddTransaction, useRemoveTransaction, useTransaction, etc.
-├── context/                # AuthContext / AuthProvider
-├── types/                 # Shared TypeScript types (Transaction, NewTransaction)
-├── lib/                   # Supabase client setup
-└── pages/                 # Route-level pages
+├── hooks/                # useAddTransaction, useRemoveTransaction, useTransaction, etc.
+├── context/              # AuthContext / AuthProvider
+├── types/                # Shared TypeScript types (Transaction, NewTransaction)
+├── lib/                  # Supabase client setup
+└── pages/                # Route-level pages
 ```
 
 ## Contributing

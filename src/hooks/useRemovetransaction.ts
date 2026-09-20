@@ -21,8 +21,6 @@ export function useRemoveTransaction(page:number){
         onMutate: async (id :string)=>{
           
             await queryClient.cancelQueries({queryKey: querykey})
-
-
             const pervioustransaction = queryClient.getQueryData(querykey)
              queryClient.setQueryData(querykey, (oldData: { data: Transaction[]; count: number } = { data: [], count: 0 }) => ({
                 ...oldData,
