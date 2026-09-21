@@ -3,11 +3,11 @@ import { supabase } from "../Api/supabase";
 import { useAuth } from "../context/AuthContext";
 import type { Transaction } from "../types/Transaction";
 
-export function useRemoveTransaction(page:number){
+export function useRemoveTransaction(page:number , searchTerm?: string) {
 
     const {user } = useAuth()
     const queryClient = useQueryClient()
-    const querykey = ['transactions', user?.id,page]
+    const querykey = ['transactions', user?.id, page , searchTerm]
     return useMutation({
         mutationFn: async (id : string)=>{
             const { error } = await supabase

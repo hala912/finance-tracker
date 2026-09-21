@@ -3,7 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import { Signup } from "../Pages/SignupPage/SignupPage";
 import TransactionPage from "../Pages/TransactionPage/TransactionPage";
 import { ProtectedRoute } from "./ProtectesRoutes";
-import Dashboard from "../Pages/Dashboard/Dashboard";
+import React from "react";
+const Dashboard= React.lazy(() => import("../Pages/Dashboard/Dashboard"));
 
 export function AppRoutes() {
   return (

@@ -3,14 +3,14 @@ import type { NewTransaction, Transaction } from "../types/Transaction";
 import { supabase } from "../Api/supabase";
 import { useAuth } from "../context/AuthContext";
 
-export function useAddTransaction(page: number) {
+export function useAddTransaction(page: number, searchTerm?: string) {
   const { user } = useAuth();
   const queryclient = useQueryClient();
-  const querykey = ["transactions", user?.id, page];
+  const querykey = ["transactions", user?.id, page , searchTerm];
 
   return useMutation({
     mutationFn: async (newtransaction: NewTransaction) => {
-      const { data, error } = await supabase
+      const { data, error  } = await supabase
         .from("transactions")
         .insert({ ...newtransaction, user_id: user!.id })
         .select()

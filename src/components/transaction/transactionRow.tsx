@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+
 import { useRemoveTransaction } from "../../hooks/useRemovetransaction";
 import type { Transaction } from "../../types/Transaction";
-import { useTransactionAll } from "../../hooks/useTransactionAll";
 
 const EMPTY_TRANSACTION: Transaction[] = [];
 
@@ -9,10 +8,16 @@ const TransactionsRow = ({
   data,
   page,
   setPage,
+  searchTerm,
+  setSearchTerm,
+
 }: {
   data: { data: Transaction[]; count: number } | undefined;
   page: number;
   setPage: (page: number) => void;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  
 }) => {
   const categoryStyles: Record<string, string> = {
     Income: "bg-emerald-50 text-emerald-700",
@@ -22,31 +27,11 @@ const TransactionsRow = ({
     Groceries: "bg-rose-50 text-rose-700",
   };
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-  const { mutate: handleremove } = useRemoveTransaction(page);
+
+
+  const { mutate: handleremove , isError: removeFaild } = useRemoveTransaction(page);
   const transaction = data?.data ?? EMPTY_TRANSACTION;
   const count = data?.count ?? 0;
-  const { data: allTransactions } = useTransactionAll();
-  const allTransactionsList = allTransactions ?? EMPTY_TRANSACTION;
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  const filteredTransactions = useMemo(() => {
-    const q = debouncedSearchTerm.trim().toLowerCase();
-    if (!q) return transaction;
-    return allTransactionsList.filter((t) => {
-      return (
-        t.description.toLowerCase().includes(q) ||
-        t.category.toLowerCase().includes(q)
-      );
-    });
-  }, [allTransactionsList, debouncedSearchTerm, transaction]);
 
   return (
     <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
@@ -58,7 +43,9 @@ const TransactionsRow = ({
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value)
+               setPage(0)}}
             placeholder="Search transactions..."
             className="w-48 rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-700 focus:border-teal-500 focus:outline-none"
           />
@@ -76,16 +63,16 @@ const TransactionsRow = ({
           </tr>
         </thead>
         <tbody>
-          {filteredTransactions.length === 0 ? (
+          {transaction.length === 0 ? (
             <tr>
               <td colSpan={5} className="px-5 py-10 text-center text-stone-400">
-                {debouncedSearchTerm
+                {searchTerm
                   ? "No transactions match your search."
                   : "No transactions found."}
               </td>
             </tr>
           ) : (
-            filteredTransactions.map((t) => (
+            transaction.map((t) => (
               <tr
                 key={t.id}
                 className="border-b border-stone-50 last:border-0 hover:bg-stone-50"
@@ -110,7 +97,6 @@ const TransactionsRow = ({
                   {t.type === "income" ? "+" : "-"}${t.amount.toFixed(2)}
                 </td>
                 <td className="px-5 py-4 text-right">
-                  {/* TODO: wire to useMutation delete, call with t.id */}
                   <button
                     aria-label="Delete transaction"
                     className="text-stone-300 hover:text-rose-500"
@@ -126,10 +112,17 @@ const TransactionsRow = ({
           )}
         </tbody>
       </table>
+      {
+        removeFaild && (
+          <div className="bg-rose-100 text-rose-700 px-5 py-3 text-sm">
+            Failed to remove transaction. Please try again.
+          </div>
+        )
+      }
 
       <div className="flex items-center justify-between border-t border-stone-100 px-5 py-3 text-xs text-stone-400">
         <span>
-          Showing {filteredTransactions.length} of {count} transactions
+          Showing {page + 1} of {Math.ceil(count / 10)} pages ({count} transactions)
         </span>
         <div className="flex gap-2">
           <button
@@ -137,6 +130,7 @@ const TransactionsRow = ({
             onClick={() => {
               setPage(page - 1);
             }}
+            disabled={page === 0}
           >
             Previous
           </button>
@@ -145,6 +139,7 @@ const TransactionsRow = ({
             onClick={() => {
               setPage(page + 1);
             }}
+            disabled={page >= Math.ceil(count / 10) - 1}
           >
             Next
           </button>

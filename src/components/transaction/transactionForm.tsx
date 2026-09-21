@@ -1,19 +1,30 @@
 import { useState } from "react";
 import { useAddTransaction } from "../../hooks/useAddTransaction";
 
-const TransactionForm = ({ page }: { page: number }) => {
+
+
+const TransactionForm = ({ page, searchTerm }: { page: number; searchTerm?: string }) => {
   
   const [amount, setAmount] = useState("")
   const [category, setCategory] = useState("")
   const [description, setDescription] = useState("");
   const [type ,setType] = useState<'income' | 'expense'>('expense');
-
+  const [submitError, setSubmitError] = useState(false);
   
   const today = new Date().toISOString().split('T')[0]
  
-  const { mutate } = useAddTransaction(page);
+  const { mutate , isError : isAddError } = useAddTransaction(page, searchTerm);
+
+  const isValidAmount = !isNaN(Number(amount)) && Number(amount) > 0;
+  const isValidCategory = category.trim() !== "";
+  const isValidDescription = description.trim() !== "";
 
   const handleSubmit = () => {
+    if (!isValidAmount || !isValidCategory || !isValidDescription) {
+     
+      setSubmitError(true);
+      return;
+    }
     mutate({
       amount: Number(amount),
       type,
@@ -34,6 +45,11 @@ const TransactionForm = ({ page }: { page: number }) => {
             onChange={(e)=>setAmount(e.target.value)}
             className="w-28 rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-700 focus:border-teal-500 focus:outline-none"
           />
+          {
+            submitError && !isValidAmount && (
+              <span className="text-xs text-rose-600">Please enter a valid amount.</span>
+            )
+          }
         </div>
 
         <div className="flex flex-col gap-1">
@@ -57,6 +73,11 @@ const TransactionForm = ({ page }: { page: number }) => {
             onChange={(e)=>setCategory(e.target.value)}
             className="w-40 rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-700 focus:border-teal-500 focus:outline-none"
           />
+          {
+            submitError && !isValidCategory && (
+              <span className="text-xs text-rose-600">Please enter a category.</span>
+            )
+          }
         </div>
 
         <div className="flex flex-col gap-1">
@@ -68,10 +89,15 @@ const TransactionForm = ({ page }: { page: number }) => {
             placeholder="description"
             className="w-48 rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-700 focus:border-teal-500 focus:outline-none"
           />
+          {
+            submitError && !isValidDescription && (
+              <span className="text-xs text-rose-600">Please enter a description.</span>
+            )
+          }
         </div>
       </div>
 
-      {/* TODO: wire to useMutation insert, opens a form/modal */}
+      
       <button
         type="button"
         className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700"
@@ -79,6 +105,14 @@ const TransactionForm = ({ page }: { page: number }) => {
       >
         + Add Transaction
       </button>
+      
+      {
+        isAddError && (
+          <div className="bg-rose-100 text-rose-700 px-5 py-3 text-sm">
+            Failed to add transaction. Please try again.
+          </div>
+        )
+      }
     </div>
   );
 };
